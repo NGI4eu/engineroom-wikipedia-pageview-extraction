@@ -27,7 +27,8 @@ compute_upper () {
 
     local upper_limit=$(echo "${word:0:$NCHAR}" | perl -nle 'print ++$_')
 
-    local upper_isvalid=$(echo true | awk "\"$word\" < \"$upper_limit\" {print \$0}")
+    local upper_isvalid=$(echo true | \
+                          awk "\"$word\" < \"$upper_limit\" {print \$0}")
     [[ -z $upper_isvalid ]] && upper_isvalid=false
 
     local nchar=$((10#$NCHAR))
@@ -35,7 +36,8 @@ compute_upper () {
         nchar=$((nchar - 1))
         upper_limit=$(echo "${word:0:$nchar}" | perl -nle 'print ++$_')
 
-        upper_isvalid=$(echo true | awk "\"$word\" < \"$upper_limit\" {print \$0}")
+        upper_isvalid=$(echo true | \
+                        awk "\"$word\" < \"$upper_limit\" {print \$0}")
         [[ -z $upper_isvalid ]] && upper_isvalid=false
     done
 
@@ -81,9 +83,11 @@ for word in "${WORD[@]}"; do
         echo "  * upper_limit: $upper"
     fi
 
-    result=$(grep -i ".gz $LANGUAGE " $INDEX | \
-             awk "\$3 >= \"$word\" && \$3 < \"$upper\" {print \$0}")
-    fno=$(echo $result | \
+    first_result=$(grep -i ".gz $LANGUAGE " $INDEX | \
+                   awk "\$3 >= \"$word\" && \$3 <= \"$upper\" {print \$0}" | \
+                   sort | \
+                   head -n1) || true
+    fno=$(echo $first_result | \
           awk '{print $1}' | \
           awk -F'-' '{print $2}' | \
           tr -d '.gz' | 
@@ -91,8 +95,11 @@ for word in "${WORD[@]}"; do
     fileno=$((10#$fno))
 
     # print results
-    printf "part-%010d.gz\n" $((fileno - 1))
-    printf "part-%010d.gz\n" $((fileno))
+    if (( $fileno >= 1 )); then
+        printf "part-%010d.gz\n" $((fileno - 1))
+    fi
+    grep -i ".gz $LANGUAGE " $INDEX | \
+    awk "\$3 >= \"$word\" && \$3 <= \"$upper\" {print \$1}"
 
     if $verbose; then
         echo "---"
