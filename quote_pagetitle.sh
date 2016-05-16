@@ -22,26 +22,26 @@ IFS=$'\n\t'
 if $debug; then verbose=true; fi
 
 if $debug; then
-    echo "--- ARGUMENTS ---"
-    echo "WORDS: "
+    echo -e "--- ARGUMENTS ---"
+    echo -e "WORDS: "
     for word in "${WORD[@]}"; do
-        echo "  * $word"
+        echo -e "  * $word"
     done
-    echo
-    echo "debug (-d): $debug"
-    echo "verbose (-v): $verbose"
-    echo "---"
+    echo -e
+    echo -e "debug (-d): $debug"
+    echo -e "verbose (-v): $verbose"
+    echo -e "---"
 fi
 
 for word in "${WORD[@]}"; do
     if $verbose; then
-        echo "--- $word ---"
+        echo -e "--- $word ---"
     fi
 
     quoted_word=$(printf '%s' "$word" | sed 's/[.[\*^$()+?{|]/\\&/g')
     echo ${quoted_word// /( |_|%20)}
 
     if $verbose; then
-        echo "---"
+        echo -e "---"
     fi
 done

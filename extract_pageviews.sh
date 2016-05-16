@@ -34,7 +34,6 @@ function finish {
 trap finish EXIT
 
 
-
 ##############################################################################
 # WORKFLOW
 #
@@ -71,20 +70,19 @@ DATA_DIR=$data_folder
 PAGEVIEW_DIR="$DATA_DIR/pageviews"
 
 if $debug; then
-    echo "--- ARGUMENTS ---"
-    echo
-    echo "TITLE: $TITLE"
-    echo
-    echo "debug (-d): $debug"
-    echo "DATA_DIR (-data-folder): $DATA_DIR"
-    echo "PAGEVIEW_DIR: (--pageview_folder): $PAGEVIEW_DIR"
-    echo "LANGUAGE (-l): $LANGUAGE"
-    echo "OUTPUT_DIR (-o): $OUTPUT_DIR"
-    echo "verbose (-v): $verbose"
-    echo "---"
+    echo -e "--- ARGUMENTS ---"
+    echo -e
+    echo -e "TITLE: $TITLE"
+    echo -e
+    echo -e "debug (-d): $debug"
+    echo -e "DATA_DIR (-data-folder): $DATA_DIR"
+    echo -e "PAGEVIEW_DIR: (--pageview_folder): $PAGEVIEW_DIR"
+    echo -e "LANGUAGE (-l): $LANGUAGE"
+    echo -e "OUTPUT_DIR (-o): $OUTPUT_DIR"
+    echo -e "verbose (-v): $verbose"
+    echo -e "---"
 fi
 
-exit 0
 # create output directory
 mkdir -p "./$OUTPUT_DIR/$LANGUAGE/"
 mkdir -p "./$DATA_DIR/part_data/"
@@ -93,26 +91,25 @@ mkdir -p "./$DATA_DIR/part_data/"
 #    If it is a redirect use the page towards which it is redirected
 
 # Normalize TITLE
-UNNORM_TITLE=$TITLE
-# TITLE=normalize($TITLE)
+UNNORMALIZED_TITLE=$TITLE
+TITLE=$( ./normalize_title.sh $TITLE)
 QUOTED_TITLE=$(./quote_pagetitle.sh ${TITLE//_/ })
+
+if $debug; then
+    echo -e "TITLE: $TITLE"
+    echo -e "UNNORMALIZED_TITLE: $UNNORMALIZED_TITLE"
+    echo -e "QUOTED_TITLE: $QUOTED_TITLE"
+fi
 
 # 2. get redirects
 # get_redirects -l LANG -o OUTPUT_DIR TITLE
 #    and save them in a file named ./(output)/{lang}/{title}.redirects.txt
-#
-# get_redirects.sh > ./{OUTPUT_DIR}/{LANG}/{TITLE}.redirects.txt
+./get_redirects.sh "$TITLE" > ./{OUTPUT_DIR}/{LANG}/{TITLE}.redirects.txt
 
 # 3. quote page and redirect titles and save everything in a file called:
 #    ./{output}/{lang}/{title}.quoted-redirects.txt
 QUOTED_REDIRECTS="./$OUTPUT_DIR/$LANGUAGE/$TITLE.quoted-redirects.txt"
 
-# Usage: quote_pagetitle.sh [options] WORD ...
-#
-#       -d, --debug          Enable debug mode (implies --verbose).
-#       -v, --verbose        Print unified diff format (more verbose).
-#       -h, --help           Show this help message and exits.
-#       --version            Print version and copyright information.
 cat "./$OUTPUT_DIR/$LANGUAGE/$TITLE.redirects.txt" | \
       parallel ./quote_pagetitle.sh {} | \
       sort | \
@@ -142,4 +139,4 @@ ls -1 "$DATA_DIR/part_data/" | grep gz | \
 #       ./{output}/{lang}/{title}.quoted-redirects.pageviews.txt.gz
 ls -1 "$DATA_DIR/part_data/" | grep gz | \
     parallel zgrep -E -f "$QUOTED_REDIRECTS" "{}" | \
-    gzip > "./$OUTPUT_DIR/$LANGUAGE/$TITLE.quoted-redirects.pageviews.txt.gz
+    gzip > "./$OUTPUT_DIR/$LANGUAGE/$TITLE.quoted-redirects.pageviews.txt.gz"
