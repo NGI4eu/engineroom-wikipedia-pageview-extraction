@@ -107,7 +107,7 @@ QUOTED_TITLE=$(./quote_pagetitle.sh ${TITLE//_/ })
 UNDERSCORE_TITLE="${TITLE// /_}"
 
 # 2. get redirects
-# get_redirects -l LANG -o OUTPUT_DIR TITLE
+# get_redirects -l $LANGUAGE -o $OUTPUT_DIR TITLE
 #    and save them in a file named ./(output)/{lang}/{title}.redirects.txt
 if $debug; then
     echo -e "TITLE: $TITLE"
@@ -120,7 +120,7 @@ if $debug; then
     echo -e "--- # 2. get redirects ---"
 fi
 REDIRECTS_FILE="${OUTPUT_DIR}/${LANGUAGE}/${UNDERSCORE_TITLE}.redirects.txt"
-./get_redirects.sh "$TITLE" > "$REDIRECTS_FILE"
+./get_redirects.sh -l "$LANGUAGE" "$TITLE" > "$REDIRECTS_FILE"
 
 # 3. quote page and redirect titles and save everything in a file called:
 #    ./{output}/{lang}/{title}.quoted-redirects.txt
