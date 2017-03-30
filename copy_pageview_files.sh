@@ -1,21 +1,23 @@
 #!/usr/bin/env bash
 SOURCED=false && [ "$0" = "$BASH_SOURCE" ] || SOURCED=true
 
-# get script path
-# See:
-# https://stackoverflow.com/questions/630372
-SCRIPT_PATH="$( cd "$(dirname "$0")" && pwd )"
-
-infile=''
-yearmonth=''
+debug=false
+index=''
+file=''
 gzdir=''
+INFILE=''
+INDEX=''
+GZDIR=''
 read -d '' docstring <<EOF
 Usage:
-  copy_pageview_files.sh [options] <infile> <yearmonth> <gzdir>
+  copy_pageview_files.sh [options] -f INFILE -i INDEX -g GZDIR
   copy_pageview_files.sh ( -h | --help )
   copy_pageview_files.sh ( --version )
 
   Options:
+    -g, --gzdir GZDIR    Directory with the .gz files.
+    -i, --index INDEX    Index file.
+    -f, --file INFILE    File with the list of titles to search.
     -d, --debug          Enable debug mode (implies --verbose).
     -h, --help           Show this help message and exits.
     --version            Print version and copyright information.
@@ -54,27 +56,35 @@ else
   echodebug() { true; }
 fi
 
+INDEX="$index"
+INFILE="$file"
+GZDIR="$gzdir"
+
 if $debug; then
   echodebug "--- ARGUMENTS ---"
-  echodebug "infile: $infile"
-  echodebug "yearmonth: $yearmonth"
-  echodebug "gzdir: $gzdir"
+  echodebug "INDEX: $INDEX"
+  echodebug "INFILE: $INFILE"
+  echodebug "GZDIR: $GZDIR"
   echodebug
   echodebug "debug (-d): $debug"
   echodebug "---"
 fi
+
+
+yearmonth="$(basename "$INDEX" | cut -c1-7)"
+echodebug "yearmonth: $yearmonth"
 
 # cat ./output/en/Zika_virus.quoted-redirects.txt | \
 #    parallel ./scripts/select_pageviews.sh --output-length 5 -l 'en' -i 2016-04_index "{}" | \
 #    sort | uniq  | \
 #    parallel cp /mnt/fluiddata/cconsonni/pagecounts/data/output/2016-04/{} ./data/2016-04/
 # shellcheck disable=SC2002
-cat "${infile}" | \
-  parallel ./scripts/select_pageviews.sh --output-length 5 -l 'en' -i "${yearmonth}_index" "{}" | \
+cat "${INFILE}" | \
+  parallel ./scripts/select_pageviews.sh --output-length 5 -l 'en' -i "$INDEX" "{}" | \
   sort | \
   uniq | \
   while read -r gz_file; do
-  	find "${gzdir}" -maxdepth 2 -type f -name "${gz_file}"
+    find "${GZDIR}" -maxdepth 2 -type f -name "${gz_file}"
  done > "${tmpdir}/gz_files_to_copy.txt"
 
 mkdir -p "./data/${yearmonth}/"
