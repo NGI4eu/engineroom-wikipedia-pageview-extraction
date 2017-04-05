@@ -8,6 +8,7 @@ gzdir=''
 INFILE=''
 INDEX=''
 GZDIR=''
+lang=''
 read -d '' docstring <<EOF
 Usage:
   copy_pageview_files.sh [options] -f INFILE -i INDEX -g GZDIR
@@ -18,6 +19,7 @@ Usage:
     -g, --gzdir GZDIR    Directory with the .gz files.
     -i, --index INDEX    Index file.
     -f, --file INFILE    File with the list of titles to search.
+    -l, --lang LANG      Language [default: en]
     -d, --debug          Enable debug mode (implies --verbose).
     -h, --help           Show this help message and exits.
     --version            Print version and copyright information.
@@ -67,6 +69,7 @@ if $debug; then
   echodebug "GZDIR: $GZDIR"
   echodebug
   echodebug "debug (-d): $debug"
+  echodebug "debug (-l): $lang"
   echodebug "---"
 fi
 
@@ -80,7 +83,7 @@ echodebug "yearmonth: $yearmonth"
 #    parallel cp /mnt/fluiddata/cconsonni/pagecounts/data/output/2016-04/{} ./data/2016-04/
 # shellcheck disable=SC2002
 cat "${INFILE}" | \
-  parallel ./scripts/select_pageviews.sh --output-length 5 -l 'en' -i "$INDEX" "{}" | \
+  parallel ./scripts/select_pageviews.sh --output-length 5 -l "$lang" -i "$INDEX" "{}" | \
   sort | \
   uniq | \
   while read -r gz_file; do
