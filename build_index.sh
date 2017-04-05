@@ -37,20 +37,46 @@ fi
 
 OUTPUT="$o"
 
+#################### Utils
 if $debug; then
-  echo "--- ARGUMENTS ---"
-  echo "DIRECTORY: $DIRECTORY"
-  echo "output (-o): $OUTPUT"
-  echo
-  echo "debug (-d): $debug"
-  echo "verbose (-v): $verbose"
-  echo "---"
+  echodebug_skip_header=false
+  echodebug() {
+    local numargs="$#"
+
+    if ! $echodebug_skip_header; then
+      echo -en "[$(date '+%F_%k:%M:%S')][debug]\t"
+    else
+      echodebug_skip_header=false
+    fi
+
+    if [ "$numargs" -gt 1 ] && [[ "$1" =~ ^'-n'* ]]; then
+      echodebug_skip_header=true
+    fi
+    echo "$@" 1>&2
+  }
+else
+  echodebug() { true; }
+fi
+####################
+
+if $debug; then
+  echodebug "--- ARGUMENTS ---"
+  echodebug "DIRECTORY: $DIRECTORY"
+  echodebug "output (-o): $OUTPUT"
+  echodebug
+  echodebug "debug (-d): $debug"
+  echodebug "verbose (-v): $verbose"
+  echodebug "---"
 fi
 
 logfile="${DIRECTORY}/build_index.log"
 resultsdir="${DIRECTORY}/index"
+if $debug; then
+  echodebug "* logfile: $logfile"
+  echodebug "* resultsdir: $resultsdir"
+fi
 
-set +x
+set -x
 find "$DIRECTORY" -maxdepth '1' -type 'f' -name '*.gz' -printf "%f\n" | \
   parallel \
     -j8 \
