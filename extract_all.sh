@@ -145,10 +145,16 @@ hereEOF
 
     ./scripts/extract_data.sh -d \
       -l "$lang" \
+      --datadir "$datadir"
       -f "$quoted_redirects_file" \
       -y "${year}-${month}" \
       -g "${gzdir}"
 
     done
+
+    echodebug "Removing data for year $year"
+    rm -r "$datadir/${year}-"*
+    echodebug "done"
+
   done
 done
