@@ -117,7 +117,7 @@ containsElement () {
   return 1
 }
 
-transfer_logfile="${SCRIPT_PATH}/extract_data.${pagename}.${yearmonth}.log"
+transfer_logfile="${SCRIPT_PATH}/extract_data.${lang}.${pagename}.${yearmonth}.log"
 write_log () {
     # write_log "201204" "download.start" 
     # echo "download.start" > "${scriptdir}/azure-transfer.201204.log"   
@@ -128,6 +128,18 @@ transfer_log=('')
 if [ -f "$transfer_logfile" ]; then
     transfer_log=($( cat "$transfer_logfile" ))
 fi
+
+extract_data () {
+  local INFILE="$1"
+  local datadir="$2"
+  local yearmonth="$3"
+  local outputfile="$4"
+
+  set -x
+  zgrep -E -f "$INFILE" "${datadir}/${yearmonth}/"part* | \
+    gzip > "${outputfile}" || true
+  set +x
+}
 
 wrap_run () {
 
@@ -199,5 +211,8 @@ outputfile="${outputdir}/$lang/${pagename}.pageviews.${yearmonth}.txt.gz"
 # zgrep -E -f ./output/en/Zika_virus.quoted-redirects.txt \
 #             ./data/2016-05/part* | \
 #   gzip > ./output/en/Zika_virus.quoted-redirects.pageviews.2016-05.txt.gz
-wrap_run "extract" zgrep -E -f "$INFILE" "${datadir}/${yearmonth}/"part* | gzip > "${outputfile}"
+wrap_run "extract" extract_data "$INFILE" "$datadir" "$yearmonth" "$outputfile"
 
+echodebug 'done!'
+
+exit 0
