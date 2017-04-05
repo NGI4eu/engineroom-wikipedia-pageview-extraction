@@ -145,7 +145,7 @@ hereEOF
 
     ./scripts/extract_data.sh -d \
       -l "$lang" \
-      --datadir "$datadir"
+      --datadir "$datadir" \
       -f "$quoted_redirects_file" \
       -y "${year}-${month}" \
       -g "${gzdir}"
