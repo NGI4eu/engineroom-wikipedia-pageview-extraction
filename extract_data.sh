@@ -201,7 +201,8 @@ wrap_run "build_index" "$SCRIPT_PATH/build_index.sh" -d \
                           "${gzdir_yearmonth}"
 
 echodebug -ne "  * Copy data files \t\t ... "
-wrap_run "copy_files" "$SCRIPT_PATH/copy_pageview_files.sh" \
+wrap_run "copy_files" "$SCRIPT_PATH/copy_pageview_files.sh" -d \
+                          -l "$lang" \
                           -f "$INFILE" \
                           -i "${indexfile}" \
                           -g "${GZDIR}/${YEARMONTH}"
