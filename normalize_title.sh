@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+debug=false
+verbose=false
+l=''
 eval "$(docopts -V - -h - : "$@" <<EOF
 Usage: normalize_title.sh [options] TITLE
 
@@ -25,7 +28,7 @@ IFS=$'\n\t'
 # --debug imples --vebose
 if $debug; then verbose=true; fi
 
-LANGUAGE=$l
+LANGUAGE="$l"
 
 if $debug; then
     echo -e "--- ARGUMENTS ---"
@@ -45,17 +48,17 @@ tmptrim="${tmptrim#\"}"
 utitle=${tmptrim// /_}
 
 request_url="${baseurl}?action=query&titles=${utitle}&redirects&format=json"
-response=$(curl -q -s $request_url)
+response=$(curl -q -s "$request_url")
 
-exists=$(echo $response | jq '.query.pages | .[].pageid ' | tr -d '"')
+exists=$(echo "$response" | jq '.query.pages | .[].pageid ' | tr -d '"')
 
 if [[ $exists == 'null' ]]; then
     echo -e "No such title on ${LANGUAGE}wiki: ${TITLE}"
     exit 1
 else
 
-    redirect_to=$(echo $response | jq '.query.redirects[0].to' | tr -d '"')
-    normalized_to=$(echo $response | jq '.query.normalized[0].to' | tr -d '"')
+    redirect_to=$(echo "$response" | jq '.query.redirects[0].to' | tr -d '"')
+    normalized_to=$(echo "$response" | jq '.query.normalized[0].to' | tr -d '"')
 
     if $verbose; then
         echo -e "exists: $exists"
@@ -66,12 +69,12 @@ else
     if [[ $redirect_to == 'null' ]]; then
 
         if [[ $normalized_to == 'null' ]]; then
-            echo ${utitle//_/ }
+            echo "${utitle//_/ }"
         else
-            echo $normalized_to
+            echo "$normalized_to"
         fi
 
     else
-        echo $redirect_to
+        echo "$redirect_to"
     fi
 fi

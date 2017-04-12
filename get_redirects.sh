@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+debug=false
+verbose=false
+l=''
 eval "$(docopts -V - -h - : "$@" <<EOF
 Usage: get_redirects.sh [options] TITLE
 
@@ -22,6 +25,28 @@ EOF
 set -euo pipefail
 IFS=$'\n\t'
 
+#################### Utils
+if $debug; then
+  echodebug_skip_header=false
+  echodebug() {
+    local numargs="$#"
+
+    if ! $echodebug_skip_header; then
+      echo -en "[$(date '+%F_%k:%M:%S')][debug]\t"
+    else
+      echodebug_skip_header=false
+    fi
+
+    if [ "$numargs" -gt 1 ] && [[ "$1" =~ ^'-n'* ]]; then
+      echodebug_skip_header=true
+    fi
+    echo "$@" 1>&2
+  }
+else
+  echodebug() { true; }
+fi
+####################
+
 # Set cleanup exit trap
 # See:
 # http://redsymbol.net/articles/bash-exit-traps/
@@ -35,28 +60,30 @@ trap finish EXIT
 if $debug; then verbose=true; fi
 
 MAX_API_REQUESTS=10
-LANGUAGE=$l
+LANGUAGE="$l"
 
 if $debug; then
-    echo -e "--- ARGUMENTS ---"
-    echo -e
-    echo -e "TITLE: $TITLE"
-    echo -e
-    echo -e "debug (-d): $debug"
-    echo -e "LANGUAGE (-l): $LANGUAGE"
-    echo -e "verbose (-v): $verbose"
-    echo -e "---"
+    echodebug "--- ARGUMENTS ---"
+    echodebug
+    echodebug "TITLE: $TITLE"
+    echodebug
+    echodebug "debug (-d): $debug"
+    echodebug "LANGUAGE (-l): $LANGUAGE"
+    echodebug "verbose (-v): $verbose"
+    echodebug "---"
 fi
 
 baseurl="https://${LANGUAGE}.wikipedia.org/w/api.php"
 
 # Normalize TITLE
-UNNORMALIZED_TITLE=$TITLE
-TITLE=$( ./normalize_title.sh $TITLE)
+UNNORMALIZED_TITLE="$TITLE"
+TITLE=$( ./normalize_title.sh -l "$LANGUAGE" "$TITLE")
 utitle=${TITLE// /_}
 
-echo $UNNORMALIZED_TITLE >> "$TEMPDIR/redirects.tmp"
-echo $TITLE >> "$TEMPDIR/redirects.tmp"
+echodebug "utitle: $utitle"
+
+echo "$UNNORMALIZED_TITLE" >> "$TEMPDIR/redirects.tmp"
+echo "$TITLE" >> "$TEMPDIR/redirects.tmp"
 
 declare -A params
 declare -A lastContinue
@@ -105,25 +132,25 @@ for i in $(seq 1 1 $MAX_API_REQUESTS); do
                              "${lastContinue['gblcontinue']}")
     fi
 
-    if $debug; then echo -e "$request_url"; fi
+    echodebug "$request_url"
 
-    response=$(curl -q -s $request_url)
+    response=$(curl -q -s "$request_url")
 
-    redirects_titles=$( echo $response | jq '.query.pages[].title')
+    redirects_titles=$( echo "$response" | jq '.query.pages[].title')
 
     if [[ ! $redirects_titles == 'null' ]]; then
-        echo $response \
+        echo "$response" \
             | jq -r '.query.pages[].title' >> "$TEMPDIR/redirects.tmp"
     else
         echo -e "Error in reading foo from bar"
         exit 1
     fi
 
-    is_continuing=$( echo $response | jq '.continue')
+    is_continuing=$( echo "$response" | jq '.continue')
     if [[ ! $is_continuing == 'null' ]]; then
-        lastContinue['continue']=$(echo $response \
+        lastContinue['continue']=$(echo "$response" \
                                     | jq -r '.continue.continue')
-        lastContinue['gblcontinue']=$(echo $response \
+        lastContinue['gblcontinue']=$(echo "$response" \
                                         | jq -r '.continue.gblcontinue')
     else
         break
