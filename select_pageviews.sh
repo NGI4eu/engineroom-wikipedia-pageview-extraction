@@ -144,24 +144,43 @@ compute_lower_limit () {
     echo "$lower_limit"
 }
 
+get_fno() {
+  local first_result="$1"
+  echo "$first_result" | \
+          awk '{print $1}' | \
+          awk -F'-' '{print $2}' | \
+          tr -d '.gz' | \
+          awk '{printf "%d\n",$0;}'
+}
+
+print_fno() {
+  local fno="$1"
+  fileno=$((10#$fno))
+  echodebug "  --> (print_fno) * fileno: $fileno"
+  # print results
+  if (( "$fileno" >= 1 )); then
+      printf "part-%0${output_length}d.gz\n" "$fileno"
+  fi
+}
+
 INDEX="$i"
 LANGUAGE="$l"
 NCHAR="$n"
 
 if $debug; then
-    echodebug "--- ARGUMENTS ---"
-    echodebug "WORDS: "
-    for word in "${WORD[@]}"; do
-        echodebug "  * $word"
-    done
-    echodebug
-    echodebug "debug (-d): $debug"
-    echodebug "INDEX (-i): $INDEX"
-    echodebug "LANGUAGE (-l): $LANGUAGE"
-    echodebug "NCHAR (-n): $NCHAR"
-    echodebug "output_length: $output_length"
-    echodebug "verbose (-v): $verbose"
-    echodebug "---"
+  echodebug "--- ARGUMENTS ---"
+  echodebug "WORDS: "
+  for word in "${WORD[@]}"; do
+      echodebug "  * $word"
+  done
+  echodebug
+  echodebug "debug (-d): $debug"
+  echodebug "INDEX (-i): $INDEX"
+  echodebug "LANGUAGE (-l): $LANGUAGE"
+  echodebug "NCHAR (-n): $NCHAR"
+  echodebug "output_length: $output_length"
+  echodebug "verbose (-v): $verbose"
+  echodebug "---"
 fi
 
 # https://stackoverflow.com/questions/12487424/
@@ -177,26 +196,36 @@ for word in "${WORD[@]}"; do
   echodebug "  * upper_limit: $upper"
   echodebug "  * lower_limit: $lower"
 
+  first_of_language=$(grep -E "\.gz $LANGUAGE " "$INDEX"  | \
+                      sort | \
+                      head -n 1) || true
+  last_of_language=$(grep -E "\.gz $LANGUAGE " "$INDEX"  | \
+                      sort | \
+                      tail -n 1) || true
+  fno_fol=$(get_fno "$first_of_language")
+  fno_lol=$(get_fno "$last_of_language")
+
+  print_fno "$fno_fol"
+  print_fno "$((fno_fol-1))"
+
+  print_fno "$fno_lol"
+  print_fno "$((fno_lol+1))"
+
+  echodebug "  * first of language: $first_of_language"
+  echodebug "  * last of language: $last_of_language"
+  echodebug "  * fno fol: $fno_fol"
+  echodebug "  * fno lol: $fno_lol"
+
   first_result=$(grep -i "\.gz $LANGUAGE " "$INDEX" | \
                  awk "\$3 >= \"$lower\" && \$3 <= \"$upper\" {print \$0}" | \
                  sort | \
                  head -n1) || true
   echodebug "  * first_result: $first_result"
 
-  fno=$(echo "$first_result" | \
-        awk '{print $1}' | \
-        awk -F'-' '{print $2}' | \
-        tr -d '.gz' | \
-        awk '{printf "%d\n",$0;}')
+  fno=$(get_fno "$first_result")
   echodebug "  * fno: $fno"
 
-  fileno=$((10#$fno))
-  echodebug "  * fileno: $fileno"
-
-  # print results
-  if (( "$fileno" >= 1 )); then
-      printf "part-%0${output_length}d.gz\n" $((fileno - 1))
-  fi
+  print_fno "$((fno-1))"
 
   grep -i ".gz $LANGUAGE " $INDEX | \
     awk "\$3 >= \"$lower\" && \$3 <= \"$upper\" {print \$1}"
