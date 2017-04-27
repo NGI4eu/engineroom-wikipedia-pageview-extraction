@@ -141,7 +141,7 @@ extract_data () {
 
   set -x
   zgrep -E -f "$INFILE" "${datadir}/${yearmonth}/"part* | \
-    gzip > "${outputfile}" || true
+    gzip -n > "${outputfile}" || true
   set +x
 }
 
