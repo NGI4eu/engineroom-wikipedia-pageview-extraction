@@ -95,3 +95,5 @@ mkdir -p "./data/${yearmonth}/"
 # shellcheck disable=SC2002
 cat "${tmpdir}/gz_files_to_copy.txt" | \
    parallel cp "{}" "./data/${yearmonth}/"
+
+cp "${tmpdir}/gz_files_to_copy.txt" "./data/${yearmonth}/"
