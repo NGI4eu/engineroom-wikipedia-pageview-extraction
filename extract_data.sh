@@ -18,27 +18,30 @@ datadir=''
 outputdir=''
 lang=''
 dry_run=''
-read -d '' docstring <<EOF
+restart=false
+read -rd '' docstring <<EOF
 Usage:
-  copy_pageview_files.sh [options] -f INFILE -y YEARMONTH -g GZDIR
-  copy_pageview_files.sh ( -h | --help )
-  copy_pageview_files.sh ( --version )
+  extract_data.sh [options] -f INFILE -y YEARMONTH -g GZDIR
+  extract_data.sh ( -h | --help )
+  extract_data.sh ( --version )
 
   Options:
     -d, --debug                 Enable debug mode (implies --verbose).
     --datadir DATADIR           Data directory [default: ./data]
-    -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
     -g, --gzdir gzdir           Directory with the .gz files.
     -i, --indexdir INDEXDIR     Index directory [default: ./indexes].
     -f, --file INFILE           File with the list of titles to search.
-    -y, --yearmonth YEARMONTH   Year and month to analyze, in the format
-                                YYYY-MM
+                                '--continue')
     -l, --lang LANG             Language [default: en]
     -n, --dry-run               Dry run, only show the commands to be executed.
+    -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
+    --restart                   Restart the computation (opposite of
+    -y, --yearmonth YEARMONTH   Year and month to analyze, in the format
+                                YYYY-MM
     -h, --help                  Show this help message and exits.
     --version                   Print version and copyright information.
 ----
-copy_pageview_files.sh 0.1.0
+extract_data.sh 0.1.0
 copyright (c) 2017 Cristian Consonni
 MIT License
 This is free software: you are free to change and redistribute it.
@@ -91,12 +94,13 @@ YEARMONTH="$yearmonth"
 if $debug; then
   echodebug "--- ARGUMENTS ---"
   echodebug "INFILE: $INFILE"
-  echodebug "GZDIR: $GZDIR"
   echodebug "YEARMONTH: $YEARMONTH"
+  echodebug "GZDIR: $GZDIR"
   echodebug
   echodebug "indexdir (-i): $indexdir"
   echodebug "debug (-d): $debug"
   echodebug "datadir (--datadir): $datadir"
+  echodebug "restart (--restart): $restart"
   echodebug "outputdir (-o): $outputdir"
   echodebug "lang (-l): $lang"
 
