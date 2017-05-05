@@ -35,6 +35,7 @@ Usage:
     -l, --lang LANG             Language [default: en]
     -n, --dry-run               Dry run, only show the commands to be executed.
     -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
+    -p, --prefix PREFIX         Prefix to use for the output file name [default: pageviews]
     --restart                   Restart the computation (opposite of
     -y, --yearmonth YEARMONTH   Year and month to analyze, in the format
                                 YYYY-MM
@@ -102,6 +103,7 @@ if $debug; then
   echodebug "datadir (--datadir): $datadir"
   echodebug "restart (--restart): $restart"
   echodebug "outputdir (-o): $outputdir"
+  echodebug "prefix (-p): $prefix"
   echodebug "lang (-l): $lang"
 
   echodebug "dry_run (-n): $dry_run"
@@ -212,7 +214,7 @@ wrap_run "copy_files" "$SCRIPT_PATH/copy_pageview_files.sh" -d \
                           -g "${GZDIR}/${YEARMONTH}"
 
 echodebug -ne "  * Extract data \t\t ... "
-outputfile="${outputdir}/$lang/${pagename}.pageviews.${yearmonth}.txt.gz"
+outputfile="${outputdir}/$lang/${pagename}.${prefix}.${yearmonth}.txt.gz"
 # zgrep -E -f ./output/en/Zika_virus.quoted-redirects.txt \
 #             ./data/2016-05/part* | \
 #   gzip > ./output/en/Zika_virus.quoted-redirects.pageviews.2016-05.txt.gz

@@ -26,6 +26,7 @@ Usage:
     --date-end YEAR_END         Ending year [default: 2016-07].
     --datadir DATADIR           Data directory [default: ./data]
     -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
+    -p, --prefix PREFIX         Prefix to use for the output file name [default: pageviews]
     -g, --gzdir gzdir           Directory with the .gz files.
     -i, --indexdir INDEXDIR     Index directory [default: ./indexes].
     -f, --file INFILE           File with the list of titles to search.
@@ -98,6 +99,7 @@ if $debug; then
     echodebug "debug (-d): $debug"
     echodebug "datadir (--datadir): $datadir"
     echodebug "lang (-l): $lang"
+    echodebug "prefix (-p): $prefix"
     echodebug "---"
 fi
 
@@ -135,20 +137,15 @@ for page in "${PAGE[@]}"; do
         exit 1
       fi
 
-      cat << hereEOF
-./scripts/extract_data.sh -d \
-  -l "$lang" \
-  -f "$quoted_redirects_file" \
-  -y "${year}-${month}" \
-  -g "${gzdir}"
-hereEOF
-
+    set -x
     ./scripts/extract_data.sh -d \
       -l "$lang" \
       --datadir "$datadir" \
+      --prefix "$prefix"
       -f "$quoted_redirects_file" \
       -y "${year}-${month}" \
       -g "${gzdir}"
+    set +x
 
     done
 
