@@ -109,8 +109,8 @@ if [ "$startdate" -ge "$enddate" ]; then
 fi
 
 function skip_years() {
-  if [ "$1" -le "$year_start" -a "$2" -lt "$month_start" ]; then return 0; fi
-  if [ "$1" -ge "$year_end" -a "$2" -gt "$month_end" ]; then return 0; fi
+  if [ "$1" -le "$year_start" ] && [ "$2" -lt "$month_start" ]; then return 0; fi
+  if [ "$1" -ge "$year_end" ] && [ "$2" -gt "$month_end" ]; then return 0; fi
 
   return 1
 }
