@@ -18,6 +18,26 @@ EOF
 set -euo pipefail
 IFS=$'\n\t'
 
+# How to urlencode data for curl command?
+# http://stackoverflow.com/questions/296536/
+#    how-to-urlencode-data-for-curl-command
+rawurlencode() {
+  local string="${1}"
+  local strlen=${#string}
+  local encoded=""
+  local pos c o
+
+  for (( pos=0 ; pos<strlen ; pos++ )); do
+     c=${string:$pos:1}
+     case "$c" in
+        [-_.~a-zA-Z0-9] ) o="${c}" ;;
+        * )               printf -v o '%%%02x' "'$c"
+     esac
+     encoded+="${o}"
+  done
+  REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
+}
+
 # --debug imples --vebose
 if $debug; then verbose=true; fi
 
@@ -38,8 +58,10 @@ for word in "${WORD[@]}"; do
         echo -e "--- $word ---"
     fi
 
-    quoted_word=$(printf '%s' "$word" | sed 's/[.[\*^$()+?{|]/\\&/g')
-    echo ${quoted_word// /( |_|%20)}
+    quoted_word=${word// /_}
+    # quoted_word="$( rawurlencode "$word" )"
+    quoted_word="$(echo "$quoted_word" | php -R 'echo urlencode($argn);')"
+    echo ${quoted_word//_/( |_|%20)}
 
     if $verbose; then
         echo -e "---"
