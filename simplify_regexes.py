@@ -21,7 +21,6 @@ from docopt import docopt
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='simplify_regexes.py 0.1.0')
-    print(arguments)
 
     loglevel = logging.WARNING
     if arguments['--debug']:
@@ -54,6 +53,8 @@ if __name__ == '__main__':
 
     logger.debug('loglevel: {}'.format(loglevel))
     ### END logging setup
+
+    logger.debug(arguments)
 
     with open(arguments['INFILE'], 'r') as infile:
         lines = infile.readlines()
