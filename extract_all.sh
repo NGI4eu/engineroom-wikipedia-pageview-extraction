@@ -4,7 +4,7 @@ SOURCED=false && [ "$0" = "$BASH_SOURCE" ] || SOURCED=true
 # get script path
 # See:
 # https://stackoverflow.com/questions/630372
-SCRIPT_PATH="$( cd "$(dirname "$0")" && pwd )"
+# SCRIPT_PATH="$( cd "$(dirname "$0")" && pwd )"
 
 PAGE=()
 debug=false
@@ -13,7 +13,7 @@ date_end=''
 lang=''
 gzdir=''
 datadir=''
-read -d '' docstring <<EOF
+read -rd '' docstring <<EOF
 Usage:
   extract_all.sh [options] -g GZDIR PAGE ...
   extract_all.sh ( -h | --help )
