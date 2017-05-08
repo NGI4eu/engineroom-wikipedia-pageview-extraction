@@ -141,7 +141,7 @@ for page in "${PAGE[@]}"; do
     ./scripts/extract_data.sh -d \
       -l "$lang" \
       --datadir "$datadir" \
-      --prefix "$prefix"
+      --prefix "$prefix" \
       -f "$quoted_redirects_file" \
       -y "${year}-${month}" \
       -g "${gzdir}"
