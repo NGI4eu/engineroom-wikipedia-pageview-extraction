@@ -12,5 +12,5 @@ find "$1" -maxdepth 3 -type f -name '*.redirects.txt' | \
     cat "$filename" | \
       parallel ./quote_pagetitle.sh {} | \
         sort | \
-        uniq > ./output/en/"${radix}.quoted-redirects.txt"
+        uniq > "$1/${radix}.quoted-redirects.txt"
 done
