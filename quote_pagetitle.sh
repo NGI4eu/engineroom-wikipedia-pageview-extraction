@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+WORD=()
+debug=false
+verbose=false
 eval "$(docopts -V - -h - : "$@" <<EOF
 Usage: quote_pagetitle.sh [options] WORD ...
 
@@ -60,8 +63,11 @@ for word in "${WORD[@]}"; do
 
     quoted_word=${word// /_}
     # quoted_word="$( rawurlencode "$word" )"
+    # shellcheck disable=SC2016
     quoted_word="$(echo "$quoted_word" | php -R 'echo urlencode($argn);')"
-    echo ${quoted_word//_/( |_|%20)}
+    quoted_word="${quoted_word//_/( |_|%20)}"
+    quoted_word="${quoted_word//./\\.}"
+    echo "${quoted_word}"
 
     if $verbose; then
         echo -e "---"
