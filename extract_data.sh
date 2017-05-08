@@ -115,7 +115,9 @@ fi
 # http://stackoverflow.com/questions/965053
 filename=$(basename "$INFILE")
 pagename="${filename%.*}"
+radix="${pagename%.*}"
 echodebug "pagename: $pagename"
+echodebug "radix: $radix"
 
 containsElement () {
   local el
@@ -200,7 +202,7 @@ gzfile=$(find "${GZDIR}/${YEARMONTH}" \
 gzdir_yearmonth=$(dirname "${gzfile}")
 
 indexfile="${indexdir}/${yearmonth}_index"
-simplified_redirects_file="./output/${lang}/${filename}.simplified-quoted-redirects.txt"
+simplified_redirects_file="./output/${lang}/${radix}.simplified-quoted-redirects.txt"
 
 if [ ! -f "$simplified_redirects_file" ]; then
   (>&2 echo "ERROR: redirect file")
@@ -222,10 +224,10 @@ wrap_run "copy_files" "$SCRIPT_PATH/copy_pageview_files.sh" -d \
                           -g "${GZDIR}/${YEARMONTH}"
 
 echodebug -ne "  * Extract data \t\t ... "
-outputfile="${outputdir}/$lang/${pagename}.${prefix}.${yearmonth}.txt.gz"
-# zgrep -E -f ./output/en/Zika_virus.quoted-redirects.txt \
+outputfile="${outputdir}/$lang/${radix}.${prefix}.${yearmonth}.txt.gz"
+# zgrep -E -f ./output/en/Zika_virus.simplified-quoted-redirects.txt \
 #             ./data/2016-05/part* | \
-#   gzip > ./output/en/Zika_virus.quoted-redirects.pageviews.2016-05.txt.gz
+#   gzip > ./output/en/Zika_virus.pageviews.2016-05.txt.gz
 wrap_run "extract" extract_data "$simplified_redirects_file" "$datadir" "$yearmonth" "$outputfile"
 
 echodebug 'done!'
