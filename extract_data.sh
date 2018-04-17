@@ -21,6 +21,7 @@ dry_run=''
 restart=false
 prefix=''
 word=false
+no_simplify=false
 read -rd '' docstring <<EOF
 Usage:
   extract_data.sh [options] -f INFILE -y YEARMONTH -g GZDIR
@@ -38,6 +39,7 @@ Usage:
     -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
     -p, --prefix PREFIX         Prefix to use for the output file name [default: pageviews]
     --restart                   Restart the computation.
+    --no-simplify               Simplify quoted redirects.
     -w, --word                  Extract whole words.
     -y, --yearmonth YEARMONTH   Year and month to analyze, in the format
                                 YYYY-MM
@@ -221,9 +223,14 @@ gzdir_yearmonth=$(dirname "${gzfile}")
 indexfile="${indexdir}/${yearmonth}_index"
 simplified_redirects_file="./output/${lang}/${radix}.simplified-quoted-redirects.txt"
 
-if [ ! -f "$simplified_redirects_file" ]; then
+redirects_file="$simplified_redirects_file"
+if $no_simplify; then
+  redirects_file="$INFILE"
+fi
+
+if [ ! -f "${redirects_file}" ]; then
   (>&2 echo "ERROR: redirect file")
-  (>&2 echo "  $simplified_redirects_file" )
+  (>&2 echo "  ${redirects_file}" )
   (>&2 echo "not found")
   exit 1
 fi
@@ -245,7 +252,7 @@ outputfile="${outputdir}/$lang/${radix}.${prefix}.${yearmonth}.txt.gz"
 # zgrep -E -f ./output/en/Zika_virus.simplified-quoted-redirects.txt \
 #             ./data/2016-05/part* | \
 #   gzip > ./output/en/Zika_virus.pageviews.2016-05.txt.gz
-wrap_run "extract" extract_data "$simplified_redirects_file" \
+wrap_run "extract" extract_data "${redirects_file}" \
                                 "$datadir" \
                                 "$yearmonth" \
                                 "$outputfile" \
