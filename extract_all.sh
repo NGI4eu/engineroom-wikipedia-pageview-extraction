@@ -14,6 +14,7 @@ lang=''
 gzdir=''
 datadir=''
 word=false
+no_simplify=false
 read -rd '' docstring <<EOF
 Usage:
   extract_all.sh [options] -g GZDIR PAGE ...
@@ -34,6 +35,7 @@ Usage:
                                 YYYY-MM
     -l, --lang LANG             Language [default: en]
     -n, --dry-run               Dry run, only show the commands to be executed.
+    --no-simplify               Do not use simplified quoted redirects.
     -w, --word                  Extract whole words.
     -h, --help                  Show this help message and exits.
     --version                   Print version and copyright information.
@@ -143,8 +145,15 @@ for page in "${PAGE[@]}"; do
         word_flag='--word'
       fi
 
+      no_simplify_flag=''
+      if $no_simplify; then
+        no_simplify_flag='--no-simplify'
+      fi
+
       set -x
-      ./scripts/extract_data.sh -d "$word_flag" \
+      ./scripts/extract_data.sh -d \
+        "$word_flag" \
+        "$no_simplify_flag" \
         -l "$lang" \
         --datadir "$datadir" \
         --prefix "$prefix" \

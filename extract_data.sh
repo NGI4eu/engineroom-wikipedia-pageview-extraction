@@ -39,7 +39,7 @@ Usage:
     -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
     -p, --prefix PREFIX         Prefix to use for the output file name [default: pageviews]
     --restart                   Restart the computation.
-    --no-simplify               Simplify quoted redirects.
+    --no-simplify               Do not use simplified quoted redirects.
     -w, --word                  Extract whole words.
     -y, --yearmonth YEARMONTH   Year and month to analyze, in the format
                                 YYYY-MM
