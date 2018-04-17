@@ -20,6 +20,7 @@ lang=''
 dry_run=''
 restart=false
 prefix=''
+word=false
 read -rd '' docstring <<EOF
 Usage:
   extract_data.sh [options] -f INFILE -y YEARMONTH -g GZDIR
@@ -37,13 +38,14 @@ Usage:
     -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
     -p, --prefix PREFIX         Prefix to use for the output file name [default: pageviews]
     --restart                   Restart the computation.
+    -w, --word                  Extract whole words.
     -y, --yearmonth YEARMONTH   Year and month to analyze, in the format
                                 YYYY-MM
     -h, --help                  Show this help message and exits.
     --version                   Print version and copyright information.
 ----
-extract_data.sh 0.1.0
-copyright (c) 2017 Cristian Consonni
+extract_data.sh 1.0.0
+copyright (c) 2018 Cristian Consonni
 MIT License
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
@@ -138,14 +140,26 @@ if [ -f "$transfer_logfile" ]; then
 fi
 
 extract_data () {
-  local INFILE="$1"
+  local infile="$1"
   local datadir="$2"
   local yearmonth="$3"
   local outputfile="$4"
+  local lang="$5"
+  local word="$6"
 
   set -x
-  zgrep -E -f "$INFILE" "${datadir}/${yearmonth}/"part* | \
+
+  words_file="${infile}"
+  if $word; then
+    words_file="$tmpdir/${infile}.words.txt"
+    while read -r search_term; do
+      echo "$lang ${search_term} $yearmonth" >> "${words_file}"
+    done < "${infile}"
+  fi
+
+  zgrep -E -f "${words_file}" "${datadir}/${yearmonth}/"part* | \
     gzip -n > "${outputfile}" || true
+
   set +x
 }
 
@@ -211,24 +225,29 @@ if [ ! -f "$simplified_redirects_file" ]; then
   exit 1
 fi
 
-echodebug -ne "  * Build index for ${yearmonth} \t\t ... "
+echodebug -ne "  * Build index for ${yearmonth} \\t\\t ... "
 wrap_run "build_index" "$SCRIPT_PATH/build_index.sh" -d \
                           -o "${indexfile}" \
                           "${gzdir_yearmonth}"
 
-echodebug -ne "  * Copy data files \t\t ... "
+echodebug -ne "  * Copy data files \\t\\t ... "
 wrap_run "copy_files" "$SCRIPT_PATH/copy_pageview_files.sh" -d \
                           -l "$lang" \
                           -f "$INFILE" \
                           -i "${indexfile}" \
                           -g "${GZDIR}/${YEARMONTH}"
 
-echodebug -ne "  * Extract data \t\t ... "
+echodebug -ne "  * Extract data \\t\\t ... "
 outputfile="${outputdir}/$lang/${radix}.${prefix}.${yearmonth}.txt.gz"
 # zgrep -E -f ./output/en/Zika_virus.simplified-quoted-redirects.txt \
 #             ./data/2016-05/part* | \
 #   gzip > ./output/en/Zika_virus.pageviews.2016-05.txt.gz
-wrap_run "extract" extract_data "$simplified_redirects_file" "$datadir" "$yearmonth" "$outputfile"
+wrap_run "extract" extract_data "$simplified_redirects_file" \
+                                "$datadir" \
+                                "$yearmonth" \
+                                "$outputfile" \
+                                "$lang" \
+                                "$word"
 
 echodebug 'done!'
 

@@ -20,8 +20,8 @@ Usage:
     -h, --help           Show this help message and exits.
     --version            Print version and copyright information.
 ----
-select_pageviews.sh 0.1.0
-copyright (c) 2016 Cristian Consonni
+select_pageviews.sh 1.0.0
+copyright (c) 2018 Cristian Consonni
 MIT License
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.

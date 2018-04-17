@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+debug=false
+i=''
+l=''
+n=''
+o=''
+data_folder=''
 eval "$(docopts -V - -h - : "$@" <<EOF
 Usage: extract_pageviews.sh [options] TITLE
 
@@ -67,11 +73,11 @@ trap finish EXIT
 # --debug imples --vebose
 if $debug; then verbose=true; fi
 
-INDEX=$i
-LANGUAGE=$l
-NCHAR=$n
-OUTPUT_DIR=$o
-DATA_DIR=$data_folder
+INDEX="$i"
+LANGUAGE="$l"
+NCHAR="$n"
+OUTPUT_DIR="$o"
+DATA_DIR="$data_folder"
 PAGEVIEW_DIR="$DATA_DIR/pageviews"
 
 if $debug; then

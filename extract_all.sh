@@ -24,7 +24,6 @@ Usage:
     --datadir DATADIR           Data directory [default: ./data]
     --date-start YEAR_START     Starting year [default: 2007-12].
     --date-end YEAR_END         Ending year [default: 2016-07].
-    --datadir DATADIR           Data directory [default: ./data]
     -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
     -p, --prefix PREFIX         Prefix to use for the output file name [default: pageviews]
     -g, --gzdir gzdir           Directory with the .gz files.
@@ -37,8 +36,8 @@ Usage:
     -h, --help                  Show this help message and exits.
     --version                   Print version and copyright information.
 ----
-extract_all.sh 0.1.0
-copyright (c) 2017 Cristian Consonni
+extract_all.sh 1.0.0
+copyright (c) 2018 Cristian Consonni
 MIT License
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
