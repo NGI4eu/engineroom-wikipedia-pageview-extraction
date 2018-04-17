@@ -13,6 +13,7 @@ date_end=''
 lang=''
 gzdir=''
 datadir=''
+word=false
 read -rd '' docstring <<EOF
 Usage:
   extract_all.sh [options] -g GZDIR PAGE ...
@@ -33,6 +34,7 @@ Usage:
                                 YYYY-MM
     -l, --lang LANG             Language [default: en]
     -n, --dry-run               Dry run, only show the commands to be executed.
+    -w, --word                  Extract whole words.
     -h, --help                  Show this help message and exits.
     --version                   Print version and copyright information.
 ----
@@ -136,20 +138,25 @@ for page in "${PAGE[@]}"; do
         exit 1
       fi
 
-    set -x
-    ./scripts/extract_data.sh -d \
-      -l "$lang" \
-      --datadir "$datadir" \
-      --prefix "$prefix" \
-      -f "$quoted_redirects_file" \
-      -y "${year}-${month}" \
-      -g "${gzdir}"
-    set +x
+      word_flag=''
+      if $word; then
+        word_flag='--word'
+      fi
+
+      set -x
+      ./scripts/extract_data.sh -d "$word_flag" \
+        -l "$lang" \
+        --datadir "$datadir" \
+        --prefix "$prefix" \
+        -f "$quoted_redirects_file" \
+        -y "${year}-${month}" \
+        -g "${gzdir}"
+      set +x
 
     done
 
     echodebug "Removing data for year $year"
-    rm -r "$datadir/${year}-"*
+    rm -rf "$datadir/${year}-"*
     echodebug "done"
 
   done

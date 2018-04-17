@@ -147,15 +147,18 @@ extract_data () {
   local lang="$5"
   local word="$6"
 
-  set -x
-
   words_file="${infile}"
   if $word; then
-    words_file="$tmpdir/${infile}.words.txt"
+    base_infile=$(basename "$infile")
+    clean_yearmonth=$(echo "$yearmonth" | tr -d '-')
+
+    words_file="$tmpdir/${base_infile}.words.txt"
     while read -r search_term; do
-      echo "$lang ${search_term} $yearmonth" >> "${words_file}"
+      echo "$lang ${search_term} ${clean_yearmonth}" >> "${words_file}"
     done < "${infile}"
   fi
+
+  set -x
 
   zgrep -E -f "${words_file}" "${datadir}/${yearmonth}/"part* | \
     gzip -n > "${outputfile}" || true
