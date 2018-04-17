@@ -125,7 +125,7 @@ containsElement () {
   return 1
 }
 
-transfer_logfile="${SCRIPT_PATH}/extract_data.${lang}.${pagename}.${yearmonth}.log"
+transfer_logfile="${SCRIPT_PATH}/extract_data.${lang}.${radix}.${prefix}.${yearmonth}.log"
 write_log () {
     # write_log "201204" "download.start" 
     # echo "download.start" > "${scriptdir}/azure-transfer.201204.log"   
