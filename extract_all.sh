@@ -133,7 +133,8 @@ month=''
 for page in "${PAGE[@]}"; do
   echo "> $page"
 
-  page_datadir="${tmpdir}/${page}"
+  clean_pagename=${page//[^a-zA-Z0-9]/}
+  page_datadir="${tmpdir}/${clean_pagename}"
   mkdir -p "${page_datadir}"
 
   for year in $(seq "$year_start" "$year_end"); do
