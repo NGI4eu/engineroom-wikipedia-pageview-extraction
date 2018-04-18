@@ -58,6 +58,12 @@ if ! $SOURCED; then
   IFS=$'\n\t'
 fi
 
+tmpdir=$(mktemp -d -t tmp.extract_all.XXXXXXXXXX)
+function finish {
+  rm -rf "$tmpdir"
+}
+trap finish EXIT
+
 #################### Utils
 if $debug; then
   echodebug_skip_header=false
@@ -124,6 +130,10 @@ year=''
 month=''
 for page in "${PAGE[@]}"; do
   echo "> $page"
+
+  page_datadir="${tmpdir}/${page}"
+  mkdir -p "${page_datadir}"
+
   for year in $(seq "$year_start" "$year_end"); do
     for month in {01..12}; do
       if skip_years "$year" "$month"; then continue; fi
@@ -155,7 +165,7 @@ for page in "${PAGE[@]}"; do
         "$word_flag" \
         "$no_simplify_flag" \
         -l "$lang" \
-        --datadir "$datadir" \
+        --datadir "${page_datadir}" \
         --prefix "$prefix" \
         -f "$quoted_redirects_file" \
         -y "${year}-${month}" \
@@ -165,8 +175,8 @@ for page in "${PAGE[@]}"; do
     done
 
     echodebug "Removing data for year $year"
-    rm -rf "$datadir/${year}-"*
-    echodebug "done"
+    rm -rf "${page_datadir}/${year}-"*
+    echodebug 'done'
 
   done
 done
