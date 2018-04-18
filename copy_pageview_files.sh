@@ -9,13 +9,15 @@ INFILE=''
 INDEX=''
 GZDIR=''
 lang=''
-read -d '' docstring <<EOF
+datadir=''
+read -r -d '' docstring <<EOF
 Usage:
   copy_pageview_files.sh [options] -f INFILE -i INDEX -g GZDIR
   copy_pageview_files.sh ( -h | --help )
   copy_pageview_files.sh ( --version )
 
   Options:
+    --datadir DATADIR    Data directory [default: ./data]
     -g, --gzdir GZDIR    Directory with the .gz files.
     -i, --index INDEX    Index file.
     -f, --file INFILE    File with the list of titles to search.
@@ -62,17 +64,16 @@ INDEX="$index"
 INFILE="$file"
 GZDIR="$gzdir"
 
-if $debug; then
-  echodebug "--- ARGUMENTS ---"
-  echodebug "INDEX: $INDEX"
-  echodebug "INFILE: $INFILE"
-  echodebug "GZDIR: $GZDIR"
-  echodebug
-  echodebug "debug (-d): $debug"
-  echodebug "debug (-l): $lang"
-  echodebug "---"
-fi
+echodebug "--- ARGUMENTS ---"
+echodebug "INDEX: $INDEX"
+echodebug "INFILE: $INFILE"
+echodebug "GZDIR: $GZDIR"
+echodebug "--datadir: $datadir"
 
+echodebug
+echodebug "debug (-d): $debug"
+echodebug "debug (-l): $lang"
+echodebug "---"
 
 yearmonth="$(basename "$INDEX" | cut -c1-7)"
 echodebug "yearmonth: $yearmonth"
@@ -94,6 +95,8 @@ mkdir -p "./data/${yearmonth}/"
 
 # shellcheck disable=SC2002
 cat "${tmpdir}/gz_files_to_copy.txt" | \
-   parallel cp "{}" "./data/${yearmonth}/"
+   parallel cp "{}" "${datadir}/${yearmonth}/"
 
-cp "${tmpdir}/gz_files_to_copy.txt" "./data/${yearmonth}/"
+cp "${tmpdir}/gz_files_to_copy.txt" "${datadir}/${yearmonth}/"
+
+exit 0

@@ -242,6 +242,7 @@ wrap_run "build_index" "$SCRIPT_PATH/build_index.sh" -d \
 
 echodebug -ne "  * Copy data files \\t\\t ... "
 wrap_run "copy_files" "$SCRIPT_PATH/copy_pageview_files.sh" -d \
+						  --datadir "$datadir" \
                           -l "$lang" \
                           -f "$INFILE" \
                           -i "${indexfile}" \
