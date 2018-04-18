@@ -22,6 +22,7 @@ restart=false
 prefix=''
 word=false
 no_simplify=false
+no_build_index=false
 read -rd '' docstring <<EOF
 Usage:
   extract_data.sh [options] -f INFILE -y YEARMONTH -g GZDIR
@@ -40,6 +41,7 @@ Usage:
     -p, --prefix PREFIX         Prefix to use for the output file name [default: pageviews]
     --restart                   Restart the computation.
     --no-simplify               Do not use simplified quoted redirects.
+    --no-build-index            Do not build indexes.
     -w, --word                  Extract whole words.
     -y, --yearmonth YEARMONTH   Year and month to analyze, in the format
                                 YYYY-MM
@@ -235,14 +237,16 @@ if [ ! -f "${redirects_file}" ]; then
   exit 1
 fi
 
-echodebug -ne "  * Build index for ${yearmonth} \\t\\t ... "
-wrap_run "build_index" "$SCRIPT_PATH/build_index.sh" -d \
-                          -o "${indexfile}" \
-                          "${gzdir_yearmonth}"
+if ! $no_build_index; then
+  echodebug -ne "  * Build index for ${yearmonth} \\t\\t ... "
+  wrap_run "build_index" "$SCRIPT_PATH/build_index.sh" -d \
+                            -o "${indexfile}" \
+                            "${gzdir_yearmonth}"
+fi
 
 echodebug -ne "  * Copy data files \\t\\t ... "
 wrap_run "copy_files" "$SCRIPT_PATH/copy_pageview_files.sh" -d \
-						  --datadir "$datadir" \
+                          --datadir "$datadir" \
                           -l "$lang" \
                           -f "$INFILE" \
                           -i "${indexfile}" \
