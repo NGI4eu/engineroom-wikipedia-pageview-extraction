@@ -155,19 +155,25 @@ for page in "${PAGE[@]}"; do
       word_flag=''
       if $word; then
         word_flag='--word'
+      else
+        unset word_flag
       fi
 
       no_simplify_flag=''
       if $no_simplify; then
         no_simplify_flag='--no-simplify'
+      else
+        unset no_simplify_flag
       fi
 
       no_build_index_flag=''
-      no_simplify_flag=''
       if $no_build_index; then
         no_build_index_flag='--no-build-index'
+      else
+        unset no_build_index_flag
       fi
 
+      set +u
       set -x
       ./scripts/extract_data.sh -d \
         "$word_flag" \
@@ -180,6 +186,7 @@ for page in "${PAGE[@]}"; do
         -y "${year}-${month}" \
         -g "${gzdir}"
       set +x
+      set -u
 
     done
 
