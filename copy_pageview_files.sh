@@ -78,6 +78,7 @@ echodebug "---"
 yearmonth="$(basename "$INDEX" | cut -c1-7)"
 echodebug "yearmonth: $yearmonth"
 
+set -x
 # cat ./output/en/Zika_virus.quoted-redirects.txt | \
 #    parallel ./scripts/select_pageviews.sh --output-length 5 -l 'en' -i 2016-04_index "{}" | \
 #    sort | uniq  | \
@@ -98,5 +99,6 @@ cat "${tmpdir}/gz_files_to_copy.txt" | \
    parallel cp "{}" "${datadir}/${yearmonth}/"
 
 cp "${tmpdir}/gz_files_to_copy.txt" "${datadir}/${yearmonth}/"
+set +x
 
 exit 0
