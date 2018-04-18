@@ -91,7 +91,7 @@ cat "${INFILE}" | \
     find "${GZDIR}" -maxdepth 2 -type f -name "${gz_file}"
  done > "${tmpdir}/gz_files_to_copy.txt"
 
-mkdir -p "./data/${yearmonth}/"
+mkdir -p "${datadir}/${yearmonth}/"
 
 # shellcheck disable=SC2002
 cat "${tmpdir}/gz_files_to_copy.txt" | \
