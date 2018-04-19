@@ -85,12 +85,12 @@ set -x
 #    parallel cp /mnt/fluiddata/cconsonni/pagecounts/data/output/2016-04/{} ./data/2016-04/
 # shellcheck disable=SC2002
 cat "${INFILE}" | \
-  parallel ./scripts/select_pageviews.sh --output-length 5 -l "$lang" -i "$INDEX" "{}" | \
+  "$HOME"/.linuxbrew/bin/parallel ./scripts/select_pageviews.sh --output-length 5 -l "$lang" -i "$INDEX" "{}" | \
   sort | \
   uniq | \
   while read -r gz_file; do
     find "${GZDIR}" -maxdepth 2 -type f -name "${gz_file}"
- done > "${tmpdir}/gz_files_to_copy.txt"
+ done >> "${tmpdir}/gz_files_to_copy.txt"
 
 mkdir -p "${datadir}/${yearmonth}/"
 
