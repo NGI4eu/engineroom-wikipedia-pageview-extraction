@@ -109,7 +109,7 @@ if $debug; then
     echodebug "---"
 fi
 
-tmpdir=$(mktemp -p "$datadir"-d -t tmp.extract_all.XXXXXXXXXX)
+tmpdir=$(mktemp -p "$datadir" -d -t tmp.extract_all.XXXXXXXXXX)
 function finish {
   rm -rf "$tmpdir"
 }
