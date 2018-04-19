@@ -13,6 +13,7 @@ date_end=''
 lang=''
 gzdir=''
 datadir=''
+prefix=''
 word=false
 no_simplify=false
 no_build_index=false
@@ -24,7 +25,7 @@ Usage:
 
   Options:
     -d, --debug                 Enable debug mode.
-    --datadir DATADIR           Data directory [default: ./data]
+    --datadir DATADIR           Temporary data directory [default: ./data]
     --date-start YEAR_START     Starting year [default: 2007-12].
     --date-end YEAR_END         Ending year [default: 2016-07].
     -o, --outputdir OUTPUTDIR   Output directory [default: ./output]
@@ -60,12 +61,6 @@ if ! $SOURCED; then
   IFS=$'\n\t'
 fi
 
-tmpdir=$(mktemp -d -t tmp.extract_all.XXXXXXXXXX)
-function finish {
-  rm -rf "$tmpdir"
-}
-trap finish EXIT
-
 #################### Utils
 if $debug; then
   echodebug_skip_header=false
@@ -73,7 +68,7 @@ if $debug; then
     local numargs="$#"
 
     if ! $echodebug_skip_header; then
-      echo -en "[$(date '+%F_%k:%M:%S')][debug]\t"
+      echo -en "[$(date '+%F_%k:%M:%S')][debug]\\t"
     else
       echodebug_skip_header=false
     fi
@@ -113,6 +108,12 @@ if $debug; then
     echodebug "prefix (-p): $prefix"
     echodebug "---"
 fi
+
+tmpdir=$(mktemp -p "$datadir"-d -t tmp.extract_all.XXXXXXXXXX)
+function finish {
+  rm -rf "$tmpdir"
+}
+trap finish EXIT
 
 startdate=$(date -d "${year_start}-${month_start}-01" +%s)
 enddate=$(date -d "${year_end}-${month_end}-01" +%s)
