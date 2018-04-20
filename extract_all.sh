@@ -109,11 +109,14 @@ if $debug; then
     echodebug "---"
 fi
 
-tmpdir=$(mktemp -p "$datadir" -d -t tmp.extract_all.XXXXXXXXXX)
+set -x
+export TMPDIR="$(realpath "$datadir")"
+tmpdir=$(mktemp -p "$(realpath "$datadir")" -d -t tmp.extract_all.XXXXXXXXXX)
 function finish {
   rm -rf "$tmpdir"
 }
 trap finish EXIT
+set +x
 
 startdate=$(date -d "${year_start}-${month_start}-01" +%s)
 enddate=$(date -d "${year_end}-${month_end}-01" +%s)
