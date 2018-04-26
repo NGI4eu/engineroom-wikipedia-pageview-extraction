@@ -100,7 +100,7 @@ if $debug; then
 fi
 # Normalize TITLE
 UNNORMALIZED_TITLE=$TITLE
-TITLE=$( ./normalize_title.sh $TITLE)
+TITLE=$( ./normalize_title.sh -l "$LANGUAGE" $TITLE)
 QUOTED_TITLE=$(./quote_pagetitle.sh ${TITLE//_/ })
 UNDERSCORE_TITLE="${TITLE// /_}"
 
