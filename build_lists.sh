@@ -119,6 +119,7 @@ if $debug; then
 fi
 REDIRECTS_FILE="${OUTPUT_DIR}/${LANGUAGE}/${UNDERSCORE_TITLE}.redirects.txt"
 ./get_redirects.sh -l "$LANGUAGE" "$TITLE" > "$REDIRECTS_FILE"
+echo "$TITLE" >> "$REDIRECTS_FILE"
 
 # 3. quote page and redirect titles and save everything in a file called:
 #    ./{output}/{lang}/{title}.quoted-redirects.txt
