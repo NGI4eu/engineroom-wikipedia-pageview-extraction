@@ -157,33 +157,23 @@ for page in "${PAGE[@]}"; do
         exit 1
       fi
 
-      word_flag=''
+      options=()
       if $word; then
-        word_flag='--word'
-      else
-        unset word_flag
+        options+=('--word')
       fi
 
-      no_simplify_flag=''
       if $no_simplify; then
-        no_simplify_flag='--no-simplify'
-      else
-        unset no_simplify_flag
+        options+=('--no-simplify')
       fi
 
-      no_build_index_flag=''
       if $no_build_index; then
-        no_build_index_flag='--no-build-index'
-      else
-        unset no_build_index_flag
+        options+=('--no-build-index')
       fi
 
       set +u
       set -x
       ./scripts/extract_data.sh -d \
-        ${word_flag:-} \
-        ${no_simplify_flag:-} \
-        ${no_build_index_flag:-} \
+        "${options[@]}" \
         -l "$lang" \
         --datadir "${page_datadir}" \
         --prefix "$prefix" \
