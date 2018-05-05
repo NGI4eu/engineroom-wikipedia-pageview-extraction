@@ -181,9 +181,9 @@ for page in "${PAGE[@]}"; do
       set +u
       set -x
       ./scripts/extract_data.sh -d \
-        "$word_flag" \
-        "$no_simplify_flag" \
-        "$no_build_index_flag" \
+        ${word_flag:-} \
+        ${no_simplify_flag:-} \
+        ${no_build_index_flag:-} \
         -l "$lang" \
         --datadir "${page_datadir}" \
         --prefix "$prefix" \
