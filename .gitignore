@@ -1,4 +1,6 @@
+output/*
 input/*
 data/*
 logs/*
 /*.log
+..bfg-report/
