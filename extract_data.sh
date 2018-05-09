@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2128
 SOURCED=false && [ "$0" = "$BASH_SOURCE" ] || SOURCED=true
 
 # get script path
@@ -201,7 +202,7 @@ wrap_run () {
         shift
     done
 
-    echodebug -ne "\t ---> "
+    echodebug -ne "\\t ---> "
     echodebug "${cmd[@]}"
 
     if $dry_run; then
