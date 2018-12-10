@@ -1,6 +1,10 @@
+# Ignore output, input, data, logs, ..bfg-reports directories
 output/*
 input/*
+output/*
 data/*
 logs/*
-/*.log
 ..bfg-report/
+
+# ignore all log files
+/*.log
